@@ -15,38 +15,11 @@ Cada uma das 30 fases é uma frase do dia a dia dividida rigorosamente em 5 etap
 
 ---
 
-## 🚀 Como Executar Localmente
-
-Você não precisa instalar dependências pesadas nem frameworks. Basta abrir o projeto:
-
-```bash
-# Abra o arquivo index.html no navegador ou use um servidor estático simples:
-npx serve ./
-```
-
----
-
-## ☁️ Deploy na Vercel
-
-O projeto possui um arquivo `vercel.json` configurado com URLs limpas, PWA Service Worker e cabeçalhos de cache otimizados.
-
-### Passos para subir na Vercel:
-1. Faça o commit e envie o código para este repositório no GitHub:
-   ```bash
-   git add .
-   git commit -m "feat: 5-min english morning habit mini-game PWA"
-   git push -u origin main
-   ```
-2. Acesse [vercel.com](https://vercel.com) e clique em **"Add New" -> "Project"**.
-3. Selecione o repositório **`Learning-english`**.
-4. Mantenha as configurações padrão (Framework Preset: *Other*) e clique em **Deploy**.
-
----
-
 ## 📱 Instalação no Celular (PWA)
 
 - **Android (Chrome):** Acesse o site implantado na Vercel, toque no menu de 3 pontos no canto superior direito e selecione **"Adicionar à Tela Inicial"**.
 - **iOS (Safari):** Acesse o site no Safari, toque no ícone de **Compartilhar** e selecione **"Adicionar à Tela de Início"**.
+- **Link para acesso:** https://learning-english-pearl.vercel.app/.
 
 ---
 
