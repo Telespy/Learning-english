@@ -54,11 +54,14 @@ document.addEventListener('DOMContentLoaded', () => {
   registerServiceWorker();
 });
 
-// PWA Service Worker Registration
+// PWA Service Worker Registration with Auto-Update
 function registerServiceWorker() {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js')
-      .then(reg => console.log('PWA Service Worker Registrado!', reg.scope))
+      .then(reg => {
+        reg.update(); // Força a atualização do Service Worker preso em memória
+        console.log('PWA Service Worker Registrado & Atualizado!', reg.scope);
+      })
       .catch(err => console.log('Falha no Service Worker:', err));
   }
 }
