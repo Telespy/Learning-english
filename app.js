@@ -124,7 +124,6 @@ function renderStep(step) {
 
   // Base Phrase Display
   phraseEnglish.textContent = `"${currentPhraseData.original}"`;
-  phrasePortuguese.textContent = `"${currentPhraseData.translation}"`;
 
   // Clear previous interactive content
   stepInteractiveArea.innerHTML = '';
@@ -262,13 +261,32 @@ function renderStep(step) {
   }
 }
 
-// Speech Audio TTS
+// Speech Audio TTS with Natural Voice Selection
 function playAudio(text) {
   if ('speechSynthesis' in window) {
     window.speechSynthesis.cancel(); // Stop any active speech
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'en-US';
-    utterance.rate = 0.9;
+    utterance.rate = 0.92; // Slightly natural cadence
+    utterance.pitch = 1.0;
+
+    const voices = window.speechSynthesis.getVoices();
+    // Prioritize natural / high quality native English voices
+    const preferredVoice = voices.find(v => 
+      v.lang.startsWith('en') && (
+        v.name.includes('Natural') || 
+        v.name.includes('Google US English') || 
+        v.name.includes('Samantha') || 
+        v.name.includes('Karen') || 
+        v.name.includes('Daniel') || 
+        v.name.includes('Enhanced')
+      )
+    ) || voices.find(v => v.lang.startsWith('en-US')) || voices.find(v => v.lang.startsWith('en'));
+
+    if (preferredVoice) {
+      utterance.voice = preferredVoice;
+    }
+
     window.speechSynthesis.speak(utterance);
   }
 }
