@@ -1,5 +1,6 @@
 // App State Management
 let completedLevels = JSON.parse(localStorage.getItem('english_habit_completed_levels')) || [];
+let activePhrases = JSON.parse(localStorage.getItem('english_habit_active_phrases')) || null;
 let currentLevelId = 1;
 let currentStep = 1;
 
@@ -27,12 +28,12 @@ const levelsGrid = document.getElementById('levelsGrid');
 const progressText = document.getElementById('progressText');
 const mainProgressBar = document.getElementById('mainProgressBar');
 const btnResetProgress = document.getElementById('btnResetProgress');
+const btnShufflePhrases = document.getElementById('btnShufflePhrases');
 
 const btnBackToMap = document.getElementById('btnBackToMap');
 const currentLevelBadge = document.getElementById('currentLevelBadge');
 
 const phraseEnglish = document.getElementById('phraseEnglish');
-const phrasePortuguese = document.getElementById('phrasePortuguese');
 const btnListenSpeech = document.getElementById('btnListenSpeech');
 
 const stepTitle = document.getElementById('stepTitle');
@@ -48,11 +49,50 @@ const btnNextLevel = document.getElementById('btnNextLevel');
 const btnModalMap = document.getElementById('btnModalMap');
 
 // Initialize App
-document.addEventListener('DOMContentLoaded', () => {
-  renderMapScreen();
+document.addEventListener('DOMContentLoaded', async () => {
+  if (!activePhrases || activePhrases.length < 30) {
+    await shuffleNewPhrases(false);
+  } else {
+    renderMapScreen();
+  }
   setupEventListeners();
   registerServiceWorker();
 });
+
+// Function to fetch database and pick 30 random phrases
+async function shuffleNewPhrases(confirmPrompt = true) {
+  if (confirmPrompt) {
+    if (!confirm("Deseja sortear 30 novas frases em inglês e resetar seu progresso atual?")) {
+      return;
+    }
+  }
+
+  try {
+    const response = await fetch('phrases_database.json');
+    const allPhrases = await response.json();
+
+    // Embaralhar aleatoriamente a lista de frases
+    const shuffled = [...allPhrases].sort(() => 0.5 - Math.random());
+    // Selecionar 30 frases e reatribuir IDs de 1 a 30
+    activePhrases = shuffled.slice(0, 30).map((p, idx) => ({
+      ...p,
+      id: idx + 1
+    }));
+
+    completedLevels = [];
+    localStorage.setItem('english_habit_active_phrases', JSON.stringify(activePhrases));
+    localStorage.setItem('english_habit_completed_levels', JSON.stringify(completedLevels));
+
+    renderMapScreen();
+  } catch (e) {
+    console.error("Erro ao carregar banco de frases:", e);
+    // Fallback para PHRASES se falhar
+    if (typeof PHRASES !== 'undefined') {
+      activePhrases = PHRASES.slice(0, 30);
+      renderMapScreen();
+    }
+  }
+}
 
 // PWA Service Worker Registration with Auto-Update
 function registerServiceWorker() {
@@ -73,7 +113,9 @@ function renderMapScreen() {
   progressText.textContent = `${totalCompleted} / 30 Fases`;
   mainProgressBar.style.width = `${(totalCompleted / 30) * 100}%`;
 
-  PHRASES.forEach((phrase) => {
+  const phraseList = activePhrases || PHRASES;
+
+  phraseList.forEach((phrase) => {
     const isCompleted = completedLevels.includes(phrase.id);
     // Level 1 is always unlocked; level N is unlocked if level N-1 is completed
     const isUnlocked = phrase.id === 1 || completedLevels.includes(phrase.id - 1);
@@ -101,7 +143,8 @@ function renderMapScreen() {
 // Start Game Level
 function startLevel(levelId) {
   currentLevelId = levelId;
-  currentPhraseData = PHRASES.find(p => p.id === levelId);
+  const phraseList = activePhrases || PHRASES;
+  currentPhraseData = phraseList.find(p => p.id === levelId);
   currentStep = 1;
   speakCount = 0;
   currentSelectedWord = currentPhraseData.options[0];
@@ -385,6 +428,10 @@ function setupEventListeners() {
       renderMapScreen();
     }
   });
+
+  if (btnShufflePhrases) {
+    btnShufflePhrases.addEventListener('click', () => shuffleNewPhrases(true));
+  }
 }
 
 // Complete Level Handler
