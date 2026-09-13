@@ -159,10 +159,21 @@ function startLevel(levelId) {
   renderStep(currentStep);
 }
 
+// Helper text normalizer (ignores extra spaces, quotes and casing)
+function normalizeText(text) {
+  if (!text) return "";
+  return text.trim().toLowerCase().replace(/["'.,!?]/g, '').replace(/\s+/g, ' ');
+}
+
 // Render Step Logic
 function renderStep(step) {
   currentStep = step;
   updateStepperUI(step);
+
+  // Reset button state
+  btnNextStep.disabled = false;
+  btnNextStep.style.opacity = '1';
+  btnNextStep.style.cursor = 'pointer';
 
   // Buttons visibility
   btnPrevStep.style.display = step > 1 ? 'inline-block' : 'none';
@@ -294,15 +305,42 @@ function renderStep(step) {
         <div style="background:#0f172a; padding:12px; border-radius:8px; margin-bottom:10px; font-weight:600; color:var(--accent);">
           Meta: "${currentPersonalizedPhrase}"
         </div>
-        <input type="text" id="inputWriteFinal" class="custom-input" placeholder="Digite sua frase aqui..." value="${currentWrittenPhrase}">
-        <p id="writeFeedback" style="margin-top:8px; font-size:13px; font-weight:600;"></p>
+        <input type="text" id="inputWriteFinal" class="custom-input" placeholder="Digite exatamente a frase acima..." value="${currentWrittenPhrase}">
+        <p id="writeFeedback" style="margin-top:8px; font-size:13px; font-weight:600; transition: all 0.2s ease;"></p>
       `;
       stepInteractiveArea.appendChild(writeDiv);
 
       const inputW = document.getElementById('inputWriteFinal');
-      inputW.addEventListener('input', (e) => {
-        currentWrittenPhrase = e.target.value;
-      });
+      const feedbackEl = document.getElementById('writeFeedback');
+
+      const validateWriting = () => {
+        currentWrittenPhrase = inputW.value;
+        const normalizedTarget = normalizeText(currentPersonalizedPhrase);
+        const normalizedInput = normalizeText(currentWrittenPhrase);
+
+        if (!currentWrittenPhrase.trim()) {
+          feedbackEl.style.color = '#94a3b8';
+          feedbackEl.textContent = '⌨️ Digite a frase para habilitar a conclusão.';
+          btnNextStep.disabled = true;
+          btnNextStep.style.opacity = '0.5';
+          btnNextStep.style.cursor = 'not-allowed';
+        } else if (normalizedInput === normalizedTarget) {
+          feedbackEl.style.color = '#10b981';
+          feedbackEl.textContent = '✅ Perfeito! A frase está idêntica. Pode concluir a fase!';
+          btnNextStep.disabled = false;
+          btnNextStep.style.opacity = '1';
+          btnNextStep.style.cursor = 'pointer';
+        } else {
+          feedbackEl.style.color = '#ef4444';
+          feedbackEl.textContent = '❌ A frase digitada ainda não está idêntica à Meta acima.';
+          btnNextStep.disabled = true;
+          btnNextStep.style.opacity = '0.5';
+          btnNextStep.style.cursor = 'not-allowed';
+        }
+      };
+
+      inputW.addEventListener('input', validateWriting);
+      validateWriting(); // Run initial validation check
       break;
   }
 }
