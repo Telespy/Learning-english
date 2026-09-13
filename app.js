@@ -261,34 +261,54 @@ function renderStep(step) {
   }
 }
 
-// Speech Audio TTS with Natural Voice Selection
-function playAudio(text) {
+// Advanced High Quality Speech Audio Engine
+let availableVoices = [];
+
+function loadVoices() {
   if ('speechSynthesis' in window) {
-    window.speechSynthesis.cancel(); // Stop any active speech
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'en-US';
-    utterance.rate = 0.92; // Slightly natural cadence
-    utterance.pitch = 1.0;
-
-    const voices = window.speechSynthesis.getVoices();
-    // Prioritize natural / high quality native English voices
-    const preferredVoice = voices.find(v => 
-      v.lang.startsWith('en') && (
-        v.name.includes('Natural') || 
-        v.name.includes('Google US English') || 
-        v.name.includes('Samantha') || 
-        v.name.includes('Karen') || 
-        v.name.includes('Daniel') || 
-        v.name.includes('Enhanced')
-      )
-    ) || voices.find(v => v.lang.startsWith('en-US')) || voices.find(v => v.lang.startsWith('en'));
-
-    if (preferredVoice) {
-      utterance.voice = preferredVoice;
-    }
-
-    window.speechSynthesis.speak(utterance);
+    availableVoices = window.speechSynthesis.getVoices();
   }
+}
+
+if ('speechSynthesis' in window) {
+  loadVoices();
+  window.speechSynthesis.onvoiceschanged = loadVoices;
+}
+
+function playAudio(text) {
+  if (!('speechSynthesis' in window)) return;
+  
+  window.speechSynthesis.cancel(); // Stop any active speech
+
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = 'en-US';
+  utterance.rate = 0.88; // Pitch e velocidade ideais para pronúncia limpa e cristalina
+  utterance.pitch = 1.0;
+
+  if (availableVoices.length === 0) {
+    availableVoices = window.speechSynthesis.getVoices();
+  }
+
+  // Busca cirúrgica por vozes nativas de alta definição (Google, Apple, Microsoft HD)
+  const premiumVoice = availableVoices.find(v => 
+    v.lang.replace('_', '-').startsWith('en-US') && (
+      v.name.includes('Google') || 
+      v.name.includes('Natural') || 
+      v.name.includes('Enhanced') || 
+      v.name.includes('Online') || 
+      v.name.includes('Samantha') || 
+      v.name.includes('Jenny') || 
+      v.name.includes('Guy') || 
+      v.name.includes('Aria')
+    )
+  ) || availableVoices.find(v => v.lang.startsWith('en-US')) 
+    || availableVoices.find(v => v.lang.startsWith('en'));
+
+  if (premiumVoice) {
+    utterance.voice = premiumVoice;
+  }
+
+  window.speechSynthesis.speak(utterance);
 }
 
 // Update Stepper UI dots
