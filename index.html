@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>5-Min English Morning Habit | Mini-Game</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#4f46e5">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app" class="app-container">
+    <!-- Header / Navbar -->
+    <header class="app-header">
+      <div class="logo-area">
+        <span class="logo-icon">⚡</span>
+        <div>
+          <h1>5-Min English</h1>
+          <p class="subtitle">Morning Habit Game</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="btnResetProgress" class="btn-icon" title="Resetar Progresso">🔄</button>
+      </div>
+    </header>
+
+    <!-- Main View Switcher -->
+    <main class="main-content">
+
+      <!-- SCREEN 1: MAP OF LEVELS (GRID 1-30) -->
+      <section id="mapScreen" class="screen active">
+        <div class="progress-card">
+          <div class="progress-info">
+            <span>Progresso da Jornada</span>
+            <strong id="progressText">0 / 30 Fases</strong>
+          </div>
+          <div class="progress-bar-bg">
+            <div id="mainProgressBar" class="progress-bar-fill" style="width: 0%;"></div>
+          </div>
+        </div>
+
+        <h2 class="section-title">Escolha uma Fase</h2>
+        <div id="levelsGrid" class="levels-grid">
+          <!-- 30 Levels renderizados via JS -->
+        </div>
+      </section>
+
+      <!-- SCREEN 2: GAMEPLAY OF SELECTED LEVEL -->
+      <section id="gameScreen" class="screen">
+        <!-- Top Level Header Bar -->
+        <div class="game-header">
+          <button id="btnBackToMap" class="btn-secondary-sm">← Voltar</button>
+          <div class="level-badge" id="currentLevelBadge">Fase 1</div>
+        </div>
+
+        <!-- 5 Steps Stepper Navigation -->
+        <div class="stepper">
+          <div class="step-dot active" data-step="1">1</div>
+          <div class="step-line"></div>
+          <div class="step-dot" data-step="2">2</div>
+          <div class="step-line"></div>
+          <div class="step-dot" data-step="3">3</div>
+          <div class="step-line"></div>
+          <div class="step-dot" data-step="4">4</div>
+          <div class="step-line"></div>
+          <div class="step-dot" data-step="5">5</div>
+        </div>
+
+        <!-- STEP CONTAINER (Dynamic Content) -->
+        <div class="step-card">
+          <h3 id="stepTitle" class="step-title">Minuto 1 — Listen (Ouvir)</h3>
+          <p id="stepInstruction" class="step-instruction">Escute a frase nativa com atenção. Não tente traduzir palavra por palavra.</p>
+
+          <!-- Phrase Display -->
+          <div class="phrase-box">
+            <p id="phraseEnglish" class="phrase-en">"I drink a cup of hot coffee every morning."</p>
+            <p id="phrasePortuguese" class="phrase-pt">"Eu bebo uma xícara de café quente toda manhã."</p>
+            
+            <button id="btnListenSpeech" class="btn-audio pulse">
+              <span class="audio-icon">🔊</span> Ouvir Pronúncia
+            </button>
+          </div>
+
+          <!-- Step Specific Interactive Area -->
+          <div id="stepInteractiveArea" class="interactive-area">
+            <!-- Renderizado via app.js para cada passo -->
+          </div>
+
+          <!-- Navigation / Action Controls -->
+          <div class="step-footer">
+            <button id="btnPrevStep" class="btn-secondary" style="display:none;">Anterior</button>
+            <button id="btnNextStep" class="btn-primary">Próximo Passo →</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCREEN 3: LEVEL COMPLETED MODAL / CELEBRATION -->
+      <div id="completedModal" class="modal">
+        <div class="modal-content text-center">
+          <div class="trophy-anim">🏆</div>
+          <h2>Fase Concluída!</h2>
+          <p>Você completou com sucesso o treino de 5 minutos desta frase.</p>
+          <div class="summary-box">
+            <p class="summary-label">Sua Frase Personalizada:</p>
+            <p id="summaryFinalPhrase" class="summary-phrase">"I drink a cup of green tea in my room every morning."</p>
+          </div>
+          <button id="btnNextLevel" class="btn-primary full-width">Próxima Fase 🚀</button>
+          <button id="btnModalMap" class="btn-secondary full-width margin-top-sm">Voltar ao Mapa</button>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="phrases.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
